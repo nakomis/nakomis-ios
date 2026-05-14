@@ -1,0 +1,38 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_dispatch:
+
+env:
+    CHECKOUT_REF: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/merge', github.event.pull_request.number) || github.sha }}
+
+jobs:
+    test:
+        name: Build + test
+        runs-on: macos-15
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ env.CHECKOUT_REF }}
+
+            - name: Select Xcode
+              run: sudo xcode-select -s /Applications/Xcode_16.app
+
+            - name: Install XcodeGen
+              run: brew install xcodegen
+
+            - name: Generate Xcode project
+              run: xcodegen generate
+
+            - name: Build & test
+              run: |
+                  xcodebuild test \
+                      -project NakomisHome.xcodeproj \
+                      -scheme NakomisHome \
+                      -destination 'platform=iOS Simulator,name=iPhone 16' \
+                      -enableCodeCoverage YES \
+                      | xcpretty || exit ${PIPESTATUS[0]}

@@ -1,0 +1,90 @@
+name: NakomisHome
+options:
+    bundleIdPrefix: com.nakomis
+    deploymentTarget:
+        iOS: '17.0'
+    createIntermediateGroups: true
+
+settings:
+    base:
+        SWIFT_VERSION: '5.10'
+        DEVELOPMENT_TEAM: $(NH_DEV_TEAM)
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_BITCODE: NO
+        TARGETED_DEVICE_FAMILY: '1,2'
+        SUPPORTS_MACCATALYST: NO
+
+configs:
+    Debug: debug
+    Release: release
+
+targets:
+    NakomisHome:
+        type: application
+        platform: iOS
+        sources:
+            - path: NakomisHome
+              excludes:
+                  - Resources/Info.plist
+        resources:
+            - NakomisHome/Resources/Assets.xcassets
+        info:
+            path: NakomisHome/Resources/Info.plist
+            properties:
+                CFBundleDisplayName: Nakomis Home
+                CFBundleShortVersionString: '0.1.0'
+                CFBundleVersion: '1'
+                UILaunchScreen: {}
+                UISupportedInterfaceOrientations:
+                    - UIInterfaceOrientationPortrait
+                    - UIInterfaceOrientationLandscapeLeft
+                    - UIInterfaceOrientationLandscapeRight
+                UIBackgroundModes:
+                    - remote-notification
+                CFBundleURLTypes:
+                    - CFBundleURLName: cognito-callback
+                      CFBundleURLSchemes:
+                          - com.nakomis.home
+                          - com.nakomis.home.sandbox
+                NHApiBaseURL: https://api.home.sandbox.nakomis.com
+                NHCognitoAuthority: ''
+                NHCognitoClientID: ''
+                NHCognitoRedirectURI: 'com.nakomis.home.sandbox://callback'
+                NHCognitoLoginDomain: ''
+        entitlements:
+            path: NakomisHome/Resources/NakomisHome.entitlements
+            properties:
+                aps-environment: development
+                com.apple.developer.applesignin:
+                    - Default
+        settings:
+            base:
+                PRODUCT_BUNDLE_IDENTIFIER: com.nakomis.home.sandbox
+                MARKETING_VERSION: '0.1.0'
+                CURRENT_PROJECT_VERSION: '1'
+
+    NakomisHomeTests:
+        type: bundle.unit-test
+        platform: iOS
+        sources:
+            - NakomisHomeTests
+        dependencies:
+            - target: NakomisHome
+        settings:
+            base:
+                PRODUCT_BUNDLE_IDENTIFIER: com.nakomis.home.sandbox.tests
+
+schemes:
+    NakomisHome:
+        build:
+            targets:
+                NakomisHome: all
+        test:
+            targets:
+                - NakomisHomeTests
+            coveragePerTargets:
+                - NakomisHome
+        run:
+            config: Debug
+        archive:
+            config: Release
