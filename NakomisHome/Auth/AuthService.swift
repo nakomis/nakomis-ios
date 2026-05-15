@@ -54,7 +54,8 @@ final class AuthService: NSObject, ObservableObject {
             let callback = try await beginAuthSession(url: url)
             guard let code = URLComponents(url: callback, resolvingAgainstBaseURL: false)?
                     .queryItems?.first(where: { $0.name == "code" })?.value else {
-                lastError = "no auth code in callback"
+                lastError = "no auth code in callback: \(callback.absoluteString)"
+                print("[AuthService] callback URL: \(callback.absoluteString)")
                 return
             }
             try await exchangeCode(code: code)

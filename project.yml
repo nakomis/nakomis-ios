@@ -47,10 +47,10 @@ targets:
                           - com.nakomis.home
                           - com.nakomis.home.sandbox
                 NHApiBaseURL: https://api.home.sandbox.nakomis.com
-                NHCognitoAuthority: ''
-                NHCognitoClientID: ''
+                NHCognitoAuthority: 'https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_SSghhLpgX'
+                NHCognitoClientID: '4h6pdqivbm2l9ic0covhnrigrj'
                 NHCognitoRedirectURI: 'com.nakomis.home.sandbox://callback'
-                NHCognitoLoginDomain: ''
+                NHCognitoLoginDomain: 'login.sandbox.nakomis.com'
         entitlements:
             path: NakomisHome/Resources/NakomisHome.entitlements
             properties:
