@@ -28,13 +28,16 @@ final class AuthService: NSObject, ObservableObject {
         }
     }
 
-    func currentAccessToken() async -> String? {
+    // The HTTP API JWT authorizer validates the `aud` claim, and the backend
+    // Lambdas read `email` from claims. Cognito access tokens carry neither —
+    // only the ID token does. So identity-bearing API calls use the ID token.
+    func currentIdToken() async -> String? {
         guard let t = tokens else { return nil }
-        if t.expiresAt > Date().addingTimeInterval(60) { return t.accessToken }
+        if t.expiresAt > Date().addingTimeInterval(60) { return t.idToken }
         // Refresh flow: for v1 we just nudge the user back through sign-in
         // if the refresh token call hasn't been wired yet. Implemented in
         // HOME-153 follow-up.
-        return t.accessToken
+        return t.idToken
     }
 
     func signIn() async {

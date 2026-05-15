@@ -38,7 +38,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     @MainActor
     private func handle(action: String, approvalToken: String, serial: String) async {
         do {
-            let access = await AuthBootstrap.shared.currentAccessToken()
+            let access = await AuthBootstrap.shared.currentIdToken()
             guard let access else {
                 print("no access token available to act on notification \(serial)")
                 return
@@ -77,5 +77,5 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
 final class AuthBootstrap {
     static let shared = AuthBootstrap()
     weak var auth: AuthService?
-    func currentAccessToken() async -> String? { await auth?.currentAccessToken() }
+    func currentIdToken() async -> String? { await auth?.currentIdToken() }
 }
