@@ -1,5 +1,7 @@
 # Nakomis Home — iOS / iPadOS app
 
+<img src="docs/logo.png" alt="nakomis-ios logo" width="200" align="right"/>
+
 Native SwiftUI companion app for the Nakomis home infrastructure. First feature: **manual approval of pending client-certificate issuance requests** via APNs push (with Face ID gating). Built with room to grow into a general home-control app.
 
 ## Support
