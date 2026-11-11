@@ -33,6 +33,6 @@ jobs:
                   xcodebuild test \
                       -project NakomisHome.xcodeproj \
                       -scheme NakomisHome \
-                      -destination 'platform=iOS Simulator,name=iPhone 16' \
+                      -destination 'platform=iOS Simulator,name=iPhone 17' \
                       -enableCodeCoverage YES \
                       | xcpretty || exit ${PIPESTATUS[0]}

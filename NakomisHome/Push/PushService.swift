@@ -66,7 +66,7 @@ final class PushService: ObservableObject {
 
     private func uploadToken(using auth: AuthService) async {
         guard let token = deviceToken,
-              let access = await auth.currentAccessToken() else { return }
+              let access = await auth.currentIdToken() else { return }
         do {
             try await APIClient(authToken: access).registerDevice(token: token)
             status = .registered

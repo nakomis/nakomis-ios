@@ -7,15 +7,17 @@ final class ApprovalsViewModel: ObservableObject {
     @Published var error: String?
     @Published var loading: Bool = false
 
-    private let auth: AuthService
+    private var auth: AuthService
 
     init(auth: AuthService) { self.auth = auth }
+
+    func attach(_ auth: AuthService) { self.auth = auth }
 
     func refresh() async {
         loading = true
         defer { loading = false }
         do {
-            guard let access = await auth.currentAccessToken() else {
+            guard let access = await auth.currentIdToken() else {
                 error = "not authenticated"
                 return
             }
@@ -23,7 +25,7 @@ final class ApprovalsViewModel: ObservableObject {
             pending = try await client.listPending()
             error = nil
         } catch {
-            self.error = "\(error)"
+            await handle(error)
         }
     }
 
@@ -37,7 +39,7 @@ final class ApprovalsViewModel: ObservableObject {
 
     private func act(_ item: PendingApproval, _ body: @escaping (APIClient, String) async throws -> Void) async {
         do {
-            guard let access = await auth.currentAccessToken(),
+            guard let access = await auth.currentIdToken(),
                   let token = item.approval_token else {
                 error = "missing token"
                 return
@@ -46,7 +48,18 @@ final class ApprovalsViewModel: ObservableObject {
             try await body(client, token)
             await refresh()
         } catch {
-            self.error = "\(error)"
+            await handle(error)
         }
+    }
+
+    // A 401 means the stored token is stale or rejected; drop the session so
+    // the user re-authenticates rather than replaying a dead token forever.
+    private func handle(_ error: Error) async {
+        if case APIError.bad(let code, _) = error, code == 401 {
+            await auth.signOut()
+            self.error = nil
+            return
+        }
+        self.error = "\(error)"
     }
 }

@@ -5,7 +5,8 @@ struct ApprovalsView: View {
     @StateObject private var vm: ApprovalsViewModel
 
     init() {
-        // Placeholder vm; real one supplied via .task once auth env-object resolves.
+        // Placeholder auth; the shared environment instance is bound in .task
+        // before the first refresh (EnvironmentObject isn't available in init).
         _vm = StateObject(wrappedValue: ApprovalsViewModel(auth: AuthService()))
     }
 
@@ -39,7 +40,7 @@ struct ApprovalsView: View {
             }
             .navigationTitle("Pending approvals")
             .refreshable { await vm.refresh() }
-            .task { await vm.refresh() }
+            .task { vm.attach(auth); await vm.refresh() }
         }
     }
 }
